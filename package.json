@@ -1,0 +1,14 @@
+{
+  "name": "mcm-cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "qi.tang",
+  "license": "MIT",
+  "bin": "./bin/index.js",
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "commander": "^9.0.0",
+    "inquirer": "^8.2.0",
+    "shelljs": "^0.8.5"
+  }
+}
