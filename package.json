@@ -1,6 +1,6 @@
 {
-  "name": "mcmcli",
-  "version": "1.0.3",
+  "name": "@zblock/cli",
+  "version": "1.0.4",
   "main": "index.js",
   "author": "qi.tang",
   "license": "MIT",

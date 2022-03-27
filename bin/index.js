@@ -7,6 +7,7 @@ const { warn, log } = require('./utils');
 
 // 配置 template 2 branch
 const templateMap = {
+  'react-v2': 'react/v2',
   'react-v1': 'react/v1',
 };
 
@@ -24,12 +25,42 @@ const promptList = [
     messgae: 'please select project template',
     name: 'modal',
     choices: Object.keys(templateMap),
-    default: 'react',
+    default: 'react-v2',
   }
+];
+
+const promptListV2 = [
+  {
+    type: 'input',
+    messgae: 'please input north dsn',
+    name: 'northDsn',
+  },
+  {
+    type: 'input',
+    messgae: 'please input north ga code',
+    name: 'northGacode',
+  },
 ];
 
 const run = async () => {
   const answer = await inquirer.prompt(promptList);
+  let v2answer;
+
+  if (answer.modal === 'react-v2') {
+    v2answer = await inquirer.prompt(promptListV2);
+  }
+
+  if (v2answer) {
+    if (!v2answer.northDsn) {
+      warn('north dsn require, connect your manager get it!');
+      return;
+    }
+    
+    if (!v2answer.northGacode) {
+      warn('north ga code require, connect your manager get it!');
+      return;
+    }
+  }
 
   const dirs = shell.ls('./');
   if (dirs.findIndex(item => item === answer.projectName) > -1) {
@@ -64,6 +95,8 @@ const run = async () => {
 
   log('start inject lib, please wait a moment, it will take some time !!!');
   shell.mv('./mcmTemplate/*', `../${answer.projectName}`);
+  shell.mv('./mcmTemplate/.gitignore', `../${answer.projectName}`);
+  shell.mv('./mcmTemplate/.sentryclirc', `../${answer.projectName}`);
 
   shell.rm('-rf', 'mcmTemplate');
   shell.rm('-rf', '.git');
@@ -71,7 +104,18 @@ const run = async () => {
   const pkgStr = fs.readFileSync('./package.json');
   const pkg = JSON.parse(pkgStr);
   pkg.name = answer.projectName;
-  fs.writeFileSync('./package.json', JSON.stringify(pkg));
+  fs.writeFileSync('./package.json', JSON.stringify(pkg, null, '\t'));
+
+  if (v2answer) {
+    let northConfig = fs.readFileSync('./config/north.config.js', 'utf8');
+    northConfig = northConfig.replace('REPLACE_SENTRY_DSN', v2answer.northDsn);
+    northConfig = northConfig.replace('REPLACE_GACODE', v2answer.northGacode);
+    fs.writeFileSync('./config/north.config.js', northConfig);
+
+    let sentryConfig = fs.readFileSync('./.sentryclirc', 'utf8');
+    sentryConfig = sentryConfig.replace('REPLACE_PROJECT', answer.projectName);
+    fs.writeFileSync('./.sentryclirc', sentryConfig);
+  }
 
   if (shell.which('yarn')) {
     shell.exec('yarn install');
