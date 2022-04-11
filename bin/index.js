@@ -8,10 +8,9 @@ const { warn, log } = require('./utils');
 // 配置 template 2 branch
 const templateMap = {
   'react-v2': 'react/v2',
-  'react-v1': 'react/v1',
 };
 
-const gitUrl = 'git@github.com:Z-BLOCK-Labs/mcmTemplate.git';
+const gitUrl = 'git@github.com:atm-group/template.git';
 
 const promptList = [
   {

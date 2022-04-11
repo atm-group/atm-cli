@@ -5,7 +5,7 @@
   "author": "qi.tang",
   "license": "MIT",
   "bin": {
-    "mcm-cli": "bin/index.js"
+    "atm-cli": "bin/index.js"
   },
   "dependencies": {
     "chalk": "^5.0.0",
